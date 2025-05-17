@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Decoder - Social Media Sentiment Analysis</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f8fa;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1da1f2;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .input-section, .results-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #1991db;
+        }
+        
+        .emotion-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .positive {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .negative {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 5px solid #f44336;
+        }
+        
+        .neutral {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .emotion-details {
+            margin-top: 20px;
+        }
+        
+        .emotion-score {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .score-bar {
+            height: 20px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .joy-fill { background-color: #ffc107; width: 0%; }
+        .anger-fill { background-color: #f44336; width: 0%; }
+        .sadness-fill { background-color: #2196f3; width: 0%; }
+        .fear-fill { background-color: #9c27b0; width: 0%; }
+        .surprise-fill { background-color: #4caf50; width: 0%; }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Emotion Decoder</h1>
+        <p>Analyze emotions in social media conversations using sentiment analysis</p>
+    </header>
+    
+    <div class="container">
+        <div class="input-section">
+            <h2>Enter Social Media Text</h2>
+            <textarea id="text-input" placeholder="Paste social media conversation here..."></textarea>
+            <button id="analyze-btn">Analyze Emotions</button>
+        </div>
+        
+        <div class="results-section">
+            <h2>Emotion Analysis Results</h2>
+            <div id="sentiment-result" class="emotion-result" style="display: none;">
+                Overall Sentiment: <span id="sentiment-text"></span>
+            </div>
+            
+            <div class="emotion-details">
+                <h3>Emotion Breakdown</h3>
+                <div class="emotion-score">
+                    <span>Joy</span>
+                    <span id="joy-score">0%</span>
+                </div>
+                <div class="score-bar">
+                    <div id="joy-fill" class="score-fill joy-fill"></div>
+                </div>
+                
+                <div class="emotion-score">
+                    <span>Anger</span>
+                    <span id="anger-score">0%</span>
+                </div>
+                <div class="score-bar">
+                    <div id="anger-fill" class="score-fill anger-fill"></div>
+                </div>
+                
+                <div class="emotion-score">
+                    <span>Sadness</span>
+                    <span id="sadness-score">0%</span>
+                </div>
+                <div class="score-bar">
+                    <div id="sadness-fill" class="score-fill sadness-fill"></div>
+                </div>
+                
+                <div class="emotion-score">
+                    <span>Fear</span>
+                    <span id="fear-score">0%</span>
+                </div>
+                <div class="score-bar">
+                    <div id="fear-fill" class="score-fill fear-fill"></div>
+                </div>
+                
+                <div class="emotion-score">
+                    <span>Surprise</span>
+                    <span id="surprise-score">0%</span>
+                </div>
+                <div class="score-bar">
+                    <div id="surprise-fill" class="score-fill surprise-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This is a demonstration of sentiment analysis for emotion detection. For actual implementation, you would need to connect to a sentiment analysis API or implement machine learning algorithms.</p>
+    </footer>
+    
+    <script>
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            const text = document.getElementById('text-input').value.trim();
+            
+            if (text === '') {
+                alert('Please enter some text to analyze.');
+                return;
+            }
+            
+            // Simulate sentiment analysis (in a real app, you would call an API here)
+            analyzeSentiment(text);
+        });
+        
+        function analyzeSentiment(text) {
+            // This is a simplified simulation - real analysis would be more complex
+            
+            // Show loading state
+            const resultDiv = document.getElementById('sentiment-result');
+            resultDiv.style.display = 'block';
+            document.getElementById('sentiment-text').textContent = 'Analyzing...';
+            
+            // Simulate API delay
+            setTimeout(() => {
+                // Generate random scores for demonstration
+                // In a real app, these would come from your sentiment analysis
+                const joy = Math.floor(Math.random() * 100);
+                const anger = Math.floor(Math.random() * 100);
+                const sadness = Math.floor(Math.random() * 100);
+                const fear = Math.floor(Math.random() * 100);
+                const surprise = Math.floor(Math.random() * 100);
+                
+                // Calculate overall sentiment
+                const totalPositive = joy + surprise;
+                const totalNegative = anger + sadness + fear;
+                let overallSentiment;
+                
+                if (totalPositive > totalNegative + 20) {
+                    overallSentiment = 'Positive 😊';
+                    resultDiv.className = 'emotion-result positive';
+                } else if (totalNegative > totalPositive + 20) {
+                    overallSentiment = 'Negative 😞';
+                    resultDiv.className = 'emotion-result negative';
+                } else {
+                    overallSentiment = 'Neutral 😐';
+                    resultDiv.className = 'emotion-result neutral';
+                }
+                
+                // Update the UI
+                document.getElementById('sentiment-text').textContent = overallSentiment;
+                
+                // Update emotion scores
+                updateScore('joy', joy);
+                updateScore('anger', anger);
+                updateScore('sadness', sadness);
+                updateScore('fear', fear);
+                updateScore('surprise', surprise);
+            }, 1000);
+        }
+        
+        function updateScore(emotion, score) {
+            document.getElementById(`${emotion}-score`).textContent = `${score}%`;
+            document.getElementById(`${emotion}-fill`).style.width = `${score}%`;
+        }
+    </script>
+</body>
+</html>
